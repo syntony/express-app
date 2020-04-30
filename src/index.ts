@@ -1,21 +1,29 @@
-import * as express from 'express';
-import { Request, Response } from 'express';
+import * as express from 'express'
+import * as bodyParser from 'body-parser'
 
-const app = express();
-const { 
-  PORT = 3000
-} = process.env;
+import routes from './routes/index'
 
-app.get('/', (req: Request, res: Response) => {
-  res.send({
-    message: 'hello world!',
-  })
-});
+require('dotenv').config({
+  path: __dirname + `/../.env.${process.env.NODE_ENV || 'example'}`,
+})
 
+const { PORT = 3000 } = process.env
+
+// Create our Express app
+const app = express()
+
+// Takes the raw requests and turns them into usable properties on req.body
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+
+// After all that above middleware, we finally handle our own routes!
+app.use('/', routes)
+
+// Message after server
 if (require.main === module) {
   app.listen(PORT, () => {
-    console.log('server started at http://localhost:'+PORT);
-  });
+    console.log('server started at http://localhost:' + PORT)
+  })
 }
 
-export default app;
+export default app
