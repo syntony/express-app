@@ -1,18 +1,27 @@
 import 'reflect-metadata'
+import { createConnection } from 'typeorm'
+import * as express from 'express'
+import * as bodyParser from 'body-parser'
+import * as helmet from 'helmet'
+import * as cors from 'cors'
+import routes from './routes'
 
-import app from './app'
+//Connects to the Database -> then starts the express
+export default createConnection()
+  .then(async () => {
+    // Create a new express application instance
+    const app = express()
 
-// require('dotenv').config({
-//   path: `${__dirname}/../.env.${process.env.NODE_ENV || 'example'}`,
-// })
+    // Call midlewares
+    app.use(cors())
+    app.use(helmet())
+    app.use(bodyParser.json())
 
-const PORT = process.env.PORT || 3000
+    //Set all routes from routes folder
+    app.use('/', routes)
 
-// Message after server
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log('server started at http://localhost:' + PORT)
+    app.listen(3000, () => {
+      console.log('Server started on port http://localhost:3000!')
+    })
   })
-}
-
-export default app
+  .catch((error) => console.log(error))

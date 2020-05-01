@@ -1,14 +1,16 @@
 import { Request, Response } from 'express'
+import { getRepository } from 'typeorm'
 
-import Connection from '../services/Connection'
-import { Store } from '../database/entities/Store'
+import { Store } from '../models/Store'
 
 class StoreController {
-  public getAll = async (req: Request, res: Response) => {
-    const connection = await Connection
-    console.log({ Repo: connection.getRepository(Store) })
-    const allStores = connection.getRepository(Store).find()
-    res.json(allStores)
+  static listAll = async (req: Request, res: Response) => {
+    //Get users from database
+    const storeRepository = getRepository(Store)
+    const stores = await storeRepository.find()
+
+    //Send the users object
+    return res.send(stores)
   }
 }
 

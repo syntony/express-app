@@ -12,6 +12,10 @@ build*/
 # Mac files
 .DS_Store
 
+# IDE
+.idea
+.vscode
+
 # dotenv environment variables file
 .env.*
 !.env.example
