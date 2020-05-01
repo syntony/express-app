@@ -1,5 +1,15 @@
 {
-  "compilerOptions": {
-    "sourceMap": true
-  }
+   "compilerOptions": {
+      "lib": [ "es5", "es6" ],
+      "target": "es5",
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "importHelpers": true,
+      "declaration": true,
+      "allowSyntheticDefaultImports": true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "sourceMap": true
+   },
+   "exclude": ["node_modules"]
 }

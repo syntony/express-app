@@ -11,14 +11,22 @@
   },
   "scripts": {
     "build": "webpack",
-    "develop": "NODE_ENV=development yarn build && yarn serve",
+    "develop": "NODE_ENV=development yarn build",
     "start": "yarn develop",
     "serve": "nodemon ./build/index.js",
     "test": "jest",
     "format": "prettier --write './src/**/*.{js,ts}'",
-    "lint": "eslint './src/**/*.{js,ts}' --quiet --fix"
+    "lint": "eslint './src/**/*.{js,ts}' --quiet --fix",
+    "db:migration:create": "ts-node ./node_modules/typeorm/cli.js migration:create -n",
+    "db:migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run",
+    "db:migration:revert": "ts-node ./node_modules/typeorm/cli.js migration:revert",
+    "db:migration:generate": "ts-node ./node_modules/typeorm/cli.js migration:generate -n",
+    "db:seed:config": "ts-node ./node_modules/typeorm-seeding/dist/cli.js config",
+    "db:seed:run": "ts-node ./node_modules/typeorm-seeding/dist/cli.js seed"
   },
   "devDependencies": {
+    "@types/express": "^4.17.6",
+    "@types/faker": "^4.1.11",
     "@types/jest": "^25.2.1",
     "@types/node": "^13.13.4",
     "@typescript-eslint/eslint-plugin": "^2.30.0",
@@ -33,6 +41,9 @@
     "test": "^0.6.0",
     "ts-jest": "^25.4.0",
     "ts-loader": "^7.0.2",
+    "ts-node": "^8.9.1",
+    "typeorm": "^0.2.24",
+    "typeorm-seeding": "^1.6.1",
     "typescript": "^3.3.3",
     "webpack": "^4.29.3",
     "webpack-cli": "^3.2.3",
@@ -40,10 +51,10 @@
     "webpack-shell-plugin": "^0.5.0"
   },
   "dependencies": {
-    "@types/express": "^4.16.1",
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.16.4",
+    "faker": "^4.1.0",
     "sqlite3": "^4.2.0"
   }
 }

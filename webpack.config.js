@@ -19,7 +19,7 @@ module.exports = {
   },
   plugins: [
     new WebpackShellPlugin({
-      onBuildEnd: [NODE_ENV === 'production' ? 'node ./build/index.js' : []],
+      onBuildEnd: [NODE_ENV === 'production' ? 'node ./build/index.js' : 'yarn serve'],
     }),
   ],
   module: {
