@@ -1,6 +1,6 @@
 import React from 'react'
 import 'typeface-roboto'
-import { Navbar, NavbarBrand, Container, Row, Col } from 'react-bootstrap'
+import { Container, Row, Col } from 'react-bootstrap'
 import { BrowserRouter as Router } from 'react-router-dom'
 
 import Routes from './routes'

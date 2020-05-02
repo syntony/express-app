@@ -3,6 +3,7 @@ import { getRepository } from 'typeorm'
 import { validate } from 'class-validator'
 
 import { Store } from '../models/Store'
+import { Hookah } from '../models/Hookah'
 
 class StoreController {
   static listAll = async (req: Request, res: Response): Promise<void> => {
@@ -31,9 +32,21 @@ class StoreController {
     // Get repo
     const storeRepository = getRepository(Store)
     // Get query from database
-    const store = await storeRepository.findOneOrFail(id)
-    // Send the users object
-    res.send({ results: store })
+    try {
+      const [store, hookahs] = await Promise.all([
+        storeRepository.findOneOrFail(id),
+        getRepository(Store)
+          .createQueryBuilder()
+          .leftJoinAndSelect(Hookah, 'hookah', 'hookah.storeId = :id', { id })
+          .getMany(),
+      ])
+      // Send the users object
+      res.send({ results: { ...store, hookahs } })
+    } catch (error) {
+      // If not found, send a 404 response
+      res.status(404).send({ message: 'Store not found' })
+      return
+    }
   }
 
   static createStore = async (req: Request, res: Response): Promise<void> => {

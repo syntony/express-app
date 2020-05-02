@@ -1,10 +1,17 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, Unique, OneToMany } from 'typeorm'
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm'
 import { IsNotEmpty, Length } from 'class-validator'
-import { Hookah } from './Hookah'
+import { Store } from './Store'
 
 @Entity()
-@Unique(['name'])
-export class Store {
+export class Hookah {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
@@ -15,6 +22,9 @@ export class Store {
 
   @Column({ type: 'varchar', nullable: true })
   description: string
+
+  @Column({ type: 'tinyint', nullable: false })
+  pipes: number
 
   @Column({ nullable: true })
   image: string
@@ -27,9 +37,13 @@ export class Store {
   @UpdateDateColumn()
   updatedAt: Date
 
-  @Column({ type: 'boolean', default: true })
+  @Column({ type: 'boolean', default: 1 })
   isPublished: boolean
 
-  @OneToMany((type) => Hookah, (hookah) => hookah.store)
-  hookahs: Hookah[]
+  @Column('uuid')
+  storeId: string
+
+  @ManyToOne((type) => Store, (store) => store.hookahs)
+  @JoinColumn({ name: 'storeId', referencedColumnName: 'id' })
+  store: Store
 }

@@ -17,7 +17,7 @@ const StoreList = () => {
 
   const getStoreList = async (p = page) => {
     try {
-      const { data } = await Axios.get(`${BASE_API_URL}${SPECIFIC_STORE_URL}?limit=${STORES_FETCH_LIMIT}&page=${p}`)
+      const { data } = await Axios.get(`${BASE_API_URL}/${SPECIFIC_STORE_URL}?limit=${STORES_FETCH_LIMIT}&page=${p}`)
       setState({ ...state, stores: data.results, pages: data.meta.pages, page: data.meta.page })
     } catch (error) {
       console.error(error)
