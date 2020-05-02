@@ -16,13 +16,14 @@ const generator = (schema, min = 1, max) => {
 const clientsSchema = {
   name: '{{company.companyName}} {{company.companySuffix}}',
   description: '{{lorem.sentences}}',
+  image: 'http://loremflickr.com/640/480/hookah',
   isPublished: true,
 }
 
 export class CreateStore1588365741861 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<any> {
     await queryRunner.query(
-      `CREATE TABLE IF NOT EXISTS "store" ("id" varchar PRIMARY KEY NOT NULL, "name" varchar NOT NULL, "description" varchar, "isPublished" boolean NOT NULL DEFAULT (0), CONSTRAINT "UQ_66df34da7fb037e24fc7fee642b" UNIQUE ("name"))`
+      `CREATE TABLE IF NOT EXISTS "store" ("id" varchar PRIMARY KEY NOT NULL, "name" varchar NOT NULL, "description" varchar, "image" varchar, "isPublished" boolean NOT NULL DEFAULT (1), CONSTRAINT "UQ_66df34da7fb037e24fc7fee642b" UNIQUE ("name"))`
     )
     await queryRunner.manager
       .createQueryBuilder()

@@ -12,7 +12,7 @@ export default createConnection()
     // Create a new express application instance
     const app = express()
 
-    // Call midlewares
+    // Call middlewares
     app.use(cors())
     app.use(helmet())
     app.use(bodyParser.json())
