@@ -3,7 +3,6 @@ import { getRepository } from 'typeorm'
 import { validate } from 'class-validator'
 
 import { Store } from '../models/Store'
-import { Hookah } from '../models/Hookah'
 
 class StoreController {
   static listAll = async (req: Request, res: Response): Promise<void> => {
@@ -32,21 +31,38 @@ class StoreController {
     // Get repo
     const storeRepository = getRepository(Store)
     // Get query from database
+    let store: Store
     try {
-      const [store, hookahs] = await Promise.all([
-        storeRepository.findOneOrFail(id),
-        getRepository(Store)
-          .createQueryBuilder()
-          .leftJoinAndSelect(Hookah, 'hookah', 'hookah.storeId = :id', { id })
-          .getMany(),
-      ])
-      // Send the users object
-      res.send({ results: { ...store, hookahs } })
+      store = await getRepository(Store)
+        //   .findOneOrFail({
+        //   where: { id },
+        //   join: {
+        //     alias: 'store',
+        //     leftJoinAndSelect: {
+        //       hookah: 'store.hookahs',
+        //     },
+        //   },
+        // })
+        .createQueryBuilder('store')
+        .where({ id })
+        .leftJoinAndSelect('store.hookahs', 'hookah')
+        .leftJoinAndSelect('hookah.offers', 'offer')
+        .getOne()
     } catch (error) {
-      // If not found, send a 404 response
+      console.log(error)
+
+      res.status(500).send({ message: 'Internal Error', error })
+      return
+    }
+
+    // If not found, send a 404 response
+    if (!store) {
       res.status(404).send({ message: 'Store not found' })
       return
     }
+
+    // Send the users object
+    res.send({ results: store })
   }
 
   static createStore = async (req: Request, res: Response): Promise<void> => {

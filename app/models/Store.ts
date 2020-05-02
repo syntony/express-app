@@ -1,6 +1,8 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, Unique, OneToMany } from 'typeorm'
 import { IsNotEmpty, Length } from 'class-validator'
+
 import { Hookah } from './Hookah'
+import { Offer } from './Offer'
 
 @Entity()
 @Unique(['name'])
@@ -32,4 +34,7 @@ export class Store {
 
   @OneToMany((type) => Hookah, (hookah) => hookah.store)
   hookahs: Hookah[]
+
+  @OneToMany((type) => Offer, (offer) => offer.store)
+  offers: Offer[]
 }

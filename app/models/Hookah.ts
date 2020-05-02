@@ -6,9 +6,12 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm'
 import { IsNotEmpty, Length } from 'class-validator'
+
 import { Store } from './Store'
+import { Offer } from './Offer'
 
 @Entity()
 export class Hookah {
@@ -46,4 +49,7 @@ export class Hookah {
   @ManyToOne((type) => Store, (store) => store.hookahs)
   @JoinColumn({ name: 'storeId', referencedColumnName: 'id' })
   store: Store
+
+  @OneToMany((type) => Offer, (offer) => offer.hookah)
+  offers: Offer[]
 }
