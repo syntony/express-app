@@ -7,6 +7,6 @@ const routes = Router()
 
 // routes.use('/auth', auth)
 // routes.use('/user', user)
-routes.use('/', store)
+routes.use('/stores', store)
 
 export default routes

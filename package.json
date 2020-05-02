@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Awesome project developed with TypeORM.",
   "private": true,
-  "main": "src/index.ts",
+  "main": "app/index.ts",
   "license": "MIT",
   "engines": {
     "node": ">=10.16.0",
@@ -14,13 +14,15 @@
     "build": "webpack",
     "test": "jest",
     "tsc": "tsc",
-    "start": "set debug=* && ts-node-dev --respawn --transpileOnly src/index.ts",
+    "start": "set debug=* && ts-node-dev --respawn --transpileOnly app/index.ts",
+    "client": "cd client && yarn start",
+    "dev": "concurrently --kill-others-on-fail \"yarn start\" \"yarn client\"",
     "prod": "tsc && node ./build/app.js",
     "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run",
     "migration:revert": "ts-node ./node_modules/typeorm/cli.js migration:revert",
     "migration:generate": "ts-node ./node_modules/typeorm/cli.js migration:generate -n",
     "migration:create": "ts-node ./node_modules/typeorm/cli.js migration:create -n",
-    "lint": "eslint './src/**/*.{js,ts}' --quiet --fix"
+    "lint": "eslint './app/**/*.{js,ts}' --quiet --fix"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
@@ -32,6 +34,7 @@
     "@types/node": "^8.0.29",
     "@typescript-eslint/eslint-plugin": "^2.30.0",
     "@typescript-eslint/parser": "^2.30.0",
+    "concurrently": "^5.2.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.3",

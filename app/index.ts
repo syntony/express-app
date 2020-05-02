@@ -18,7 +18,7 @@ export default createConnection()
     app.use(bodyParser.json())
 
     //Set all routes from routes folder
-    app.use('/', routes)
+    app.use('/api/v1', routes)
 
     app.listen(3000, () => {
       console.log('Server started on port http://localhost:3000!')

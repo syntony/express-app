@@ -10,7 +10,7 @@ class StoreController {
     const stores = await storeRepository.find()
 
     //Send the users object
-    return res.send(stores)
+    return res.send({ results: stores })
   }
 }
 
