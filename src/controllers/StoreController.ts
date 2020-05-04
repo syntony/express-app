@@ -33,7 +33,7 @@ class StoreController {
     // Get query from database
     let store: Store
     try {
-      store = await getRepository(Store)
+      store = await storeRepository
         //   .findOneOrFail({
         //   where: { id },
         //   join: {

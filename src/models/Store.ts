@@ -32,9 +32,9 @@ export class Store {
   @Column({ type: 'boolean', default: true })
   isPublished: boolean
 
-  @OneToMany((type) => Hookah, (hookah) => hookah.store)
+  @OneToMany(() => Hookah, (hookah) => hookah.store)
   hookahs: Hookah[]
 
-  @OneToMany((type) => Offer, (offer) => offer.store)
+  @OneToMany(() => Offer, (offer) => offer.store)
   offers: Offer[]
 }

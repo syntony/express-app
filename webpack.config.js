@@ -5,7 +5,7 @@ const WebpackShellPlugin = require('webpack-shell-plugin')
 const { NODE_ENV = 'production' } = process.env
 
 module.exports = {
-  entry: './app/index.ts',
+  entry: './src/index.ts',
   mode: NODE_ENV,
   target: 'node',
   watch: NODE_ENV === 'development',

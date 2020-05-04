@@ -46,10 +46,10 @@ export class Hookah {
   @Column('uuid')
   storeId: string
 
-  @ManyToOne((type) => Store, (store) => store.hookahs)
+  @ManyToOne(() => Store, (store) => store.hookahs)
   @JoinColumn({ name: 'storeId', referencedColumnName: 'id' })
   store: Store
 
-  @OneToMany((type) => Offer, (offer) => offer.hookah)
+  @OneToMany(() => Offer, (offer) => offer.hookah)
   offers: Offer[]
 }

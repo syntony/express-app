@@ -9,7 +9,11 @@ export default class SeedsService {
     max = max || min
     return Array.from({ length: faker.random.number({ min, max }) }).map(() =>
       Object.keys(schema).reduce((entity, key) => {
-        entity[key] = faker.fake(schema[key])
+        if (key.toLowerCase() === 'pipes' || key.toLowerCase().includes('number')) {
+          entity[key] = faker.random.number(schema[key]).toString()
+        } else {
+          entity[key] = faker.fake(schema[key])
+        }
         return entity
       }, {})
     )
@@ -22,16 +26,16 @@ export default class SeedsService {
       image: 'http://loremflickr.com/640/480/hookah',
     }
     const hookahsSchema = {
-      name: '{{commerce.productName}}',
+      name: '{{commerce.product}} {{commerce.productName}}',
       description: '{{lorem.sentences}}',
-      pipes: '{{random.number(6)}}',
+      pipes: { min: 1, max: 6 },
       image: 'http://loremflickr.com/640/480/hookah',
     }
     const offerSchema = {
       guest: '{{name.firstName}} {{name.lastName}}',
-      guestsNumber: '{{random.number(8)}}',
-      reservedFrom: new Date().toUTCString(),
-      reservedUntil: new Date().toUTCString(),
+      guestsNumber: { min: 1, max: 8 },
+      reservedFrom: new Date().toISOString(),
+      reservedUntil: new Date().toISOString(),
     }
     // seed
     // stores

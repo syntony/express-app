@@ -46,11 +46,11 @@ export class Offer {
   @UpdateDateColumn()
   updatedAt: Date
 
-  @ManyToOne((type) => Store, (store) => store.offers)
+  @ManyToOne(() => Store, (store) => store.offers)
   @JoinColumn({ name: 'storeId', referencedColumnName: 'id' })
   store: Store
 
-  @ManyToOne((type) => Hookah, (hookah) => hookah.offers)
+  @ManyToOne(() => Hookah, (hookah) => hookah.offers)
   @JoinColumn({ name: 'hookahId', referencedColumnName: 'id' })
   hookah: Hookah
 }

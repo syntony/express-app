@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:alpine
 
 # Env
 ENV TIME_ZONE=Europe/Kiev
