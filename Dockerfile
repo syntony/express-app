@@ -17,6 +17,8 @@ COPY package.json ./
 COPY yarn.lock ./
 
 # Install all Packages
+RUN apk add --update python make g++\
+   && rm -rf /var/cache/apk/*
 RUN yarn install
 
 # Copy all other source code to work directory

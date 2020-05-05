@@ -4,7 +4,7 @@ import { validate } from 'class-validator'
 
 import { Offer } from '../models/Offer'
 import { Hookah } from '../models/Hookah'
-import { Store } from '../models/Store'
+import DateService from '../services/DateService'
 
 class OfferController {
   static listAll = async (req: Request, res: Response): Promise<void> => {
@@ -22,8 +22,11 @@ class OfferController {
       }
     } else {
       try {
-        await getRepository(Hookah).findOneOrFail({ storeId })
-        offers = await offerRepository.find({ where: { hookahId }, cache: true })
+        const results = await Promise.all([
+          offerRepository.find({ where: { hookahId }, cache: true }),
+          getRepository(Hookah).findOneOrFail({ storeId, id: hookahId }),
+        ])
+        offers = results[0]
       } catch (errors) {
         res.status(404).send({ message: 'Hookah not found', errors })
         return
@@ -60,37 +63,54 @@ class OfferController {
 
   static createOffer = async (req: Request, res: Response): Promise<void> => {
     // Get parameters from the body
-    const { name, description, pipes, image, storeId } = req.body
-    const hookah = new Hookah()
-    hookah.name = name
-    hookah.description = description
-    hookah.pipes = pipes
-    hookah.image = image
-    hookah.image = storeId
+    const { storeId, hookahId } = req.params
+    const { guest, guestsNumber, reservedFrom } = req.body
+    const offer = new Offer()
+    offer.guest = guest
+    offer.guestsNumber = guestsNumber
+    offer.reservedFrom = reservedFrom
+    offer.reservedUntil = reservedFrom && new Date(new Date(reservedFrom).getTime() + 30 * 60000).toISOString()
+    offer.storeId = storeId
+    offer.hookahId = hookahId
     // Validate if the parameters are ok
-    const errors = await validate(hookah)
+    const errors = await validate(offer, { groups: ['offers-queries'] })
     if (errors.length > 0) {
       res.status(400).send({ message: 'Bad Request', errors })
       return
     }
-    // Find if store is valid
+    // Find if hookah is valid
+    let hookah: Hookah
     try {
-      await getRepository(Store).findOneOrFail(storeId)
+      hookah = await getRepository(Hookah).findOneOrFail({ storeId, id: hookahId })
     } catch {
-      res.status(422).send({ message: 'Store not found' })
+      res.status(404).send({ message: 'Hookah not found' })
+      return
     }
+    // Gust have to be number <= hookah.pipes * 2
+    if (offer.guestsNumber > hookah.pipes * 2) {
+      res.status(422).send({ message: "This hookah doesn't have enough pipes for this offer" })
+      return
+    }
+
     // Get repo
-    const offerRepository = getRepository(Hookah)
-    // Save to database
+    const offerRepository = getRepository(Offer)
     try {
-      await offerRepository.save(hookah)
-    } catch (error) {
-      res.status(409).send({ message: 'Hookah name is already in use' })
+      // Check concurrent query
+      const concurrentOffers = await offerRepository.find({
+        storeId,
+        hookahId,
+        reservedUntil: DateService.MoreThan(offer.reservedFrom),
+      })
+      if (concurrentOffers.length) throw { concurrentOffers }
+      // Save to database
+      await offerRepository.save(offer)
+    } catch (errors) {
+      res.status(409).send({ message: 'This hookah is already in use', errors })
       return
     }
 
     // If all ok, send 201 response
-    res.status(201).send({ message: 'Hookah created' })
+    res.status(201).send({ message: 'Offer created' })
   }
 }
 

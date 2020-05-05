@@ -4,19 +4,81 @@ import { validate } from 'class-validator'
 
 import { Hookah } from '../models/Hookah'
 import { Store } from '../models/Store'
+import { Offer } from '../models/Offer'
 
 class HookahController {
   static listAll = async (req: Request, res: Response): Promise<void> => {
+    // Params for pagination
+    const { limit = '10', page = '0', from: fromDate, to: toDate, guestsNumber } = req.query
+    const take: number = Number(limit)
+    const reqPage: number = Number(page)
+    const skip: number = take * reqPage
     // Params
     const { storeId } = req.params
     const hookahRepository = getRepository(Hookah)
     // Get query from database and some meta
     let hookahs
-    try {
-      hookahs = await hookahRepository.find({ storeId })
-    } catch (errors) {
-      res.status(500).send({ message: 'Internal server error' })
-      return
+    let total
+    if (fromDate || toDate || guestsNumber) {
+      // Search request
+      if (!fromDate || !toDate || !guestsNumber) {
+        // If search request - this 3 fields is required
+        res.status(422).send({
+          message: 'Unprocessable Entity',
+          errors: {
+            ...(!fromDate && { from: ['Query param "from" is required'] }),
+            ...(!toDate && { to: ['Query param "to" is required'] }),
+            ...(!guestsNumber && { guestsNumber: ['Query param "guestsNumber" is required'] }),
+          },
+        })
+        return
+      }
+      const offer = new Offer()
+      offer.guestsNumber = Number(guestsNumber)
+      offer.reservedFrom = String(fromDate)
+      offer.reservedUntil = String(toDate)
+      // Validate if the parameters are ok
+      const errors = await validate(offer, { groups: ['hookahs-queries'] })
+      if (errors.length > 0) {
+        res.status(400).send({ message: 'Bad Request', errors })
+        return
+      }
+      try {
+        hookahs = await hookahRepository
+          .createQueryBuilder('hookah')
+          .where({ storeId })
+          .leftJoinAndSelect('hookah.offers', 'offers')
+          .getMany()
+        // TODO: add filter by time and pipes
+        // hookahs = hookahs.reduce((acc, h) => {
+        //   const hookah = h
+        //   const latestDate = new Date(
+        //     Math.max.apply(
+        //       null,
+        //       h.offers.map(({ reservedUntil }) => new Date(reservedUntil))
+        //     )
+        //   )
+        //   const o = hookah.offers.find(({ reservedUntil }) => {
+        //     console.log({ reservedUntil, latestDate: new Date(latestDate) })
+        //     return new Date(reservedUntil) == latestDate
+        //   })
+        //   console.log({ o })
+        //   hookah.offer = o
+        //   delete hookah.offers
+        //   return [...acc, hookah]
+        // }, [])
+      } catch (errors) {
+        res.status(500).send({ message: 'Internal server error', errors })
+        return
+      }
+    } else {
+      // Not search request
+      try {
+        ;[hookahs, total] = await hookahRepository.findAndCount({ where: { storeId }, take, skip, cache: true })
+      } catch (errors) {
+        res.status(500).send({ message: 'Internal server error', errors })
+        return
+      }
     }
     //
     if (!hookahs.length) {
@@ -24,7 +86,15 @@ class HookahController {
       return
     }
     // Send the stores object and meta
-    res.send({ results: hookahs })
+    res.send({
+      results: hookahs,
+      meta: {
+        limit: take,
+        page: reqPage,
+        pages: Math.ceil(hookahs.length / take),
+        total,
+      },
+    })
   }
 
   static getOneById = async (req: Request, res: Response): Promise<void> => {

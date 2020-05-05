@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
-import { IsNotEmpty, Length } from 'class-validator'
+import { IsInt, Min, IsNotEmpty, Length, IsDateString } from 'class-validator'
 
 import { Store } from './Store'
 import { Hookah } from './Hookah'
@@ -18,24 +18,32 @@ export class Offer {
   id: string
 
   @Column({ nullable: false })
-  @IsNotEmpty()
-  @Length(4, 20)
+  @IsNotEmpty({ groups: ['offers-queries'] })
+  @Length(4, 20, { groups: ['offers-queries'] })
   guest: string
 
   @Column({ nullable: false })
-  @IsNotEmpty()
+  @IsNotEmpty({ groups: ['offers-queries', 'hookahs-queries'] })
+  @IsInt({ groups: ['offers-queries', 'hookahs-queries'] })
+  @Min(1)
   guestsNumber: number
 
   @Column({ type: 'date', nullable: false })
-  reservedFrom: Date
+  @IsNotEmpty({ groups: ['offers-queries', 'hookahs-queries'] })
+  @IsDateString({ groups: ['offers-queries', 'hookahs-queries'] })
+  reservedFrom: string
 
   @Column({ type: 'date', nullable: false })
-  reservedUntil: Date
+  @IsNotEmpty({ groups: ['offers-queries', 'hookahs-queries'] })
+  @IsDateString({ groups: ['offers-queries', 'hookahs-queries'] })
+  reservedUntil: string
 
-  @Column('uuid')
+  @Column({ type: 'uuid', nullable: false })
+  @IsNotEmpty({ groups: ['offers-queries'] })
   storeId: string
 
-  @Column('uuid')
+  @Column({ type: 'uuid', nullable: false })
+  @IsNotEmpty({ groups: ['offers-queries'] })
   hookahId: string
 
   @Column()

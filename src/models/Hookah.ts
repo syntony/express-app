@@ -8,7 +8,7 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm'
-import { IsNotEmpty, Length } from 'class-validator'
+import { IsNotEmpty, Length, IsInt, Min, Max } from 'class-validator'
 
 import { Store } from './Store'
 import { Offer } from './Offer'
@@ -27,6 +27,10 @@ export class Hookah {
   description: string
 
   @Column({ type: 'tinyint', nullable: false })
+  @IsNotEmpty()
+  @IsInt()
+  @Min(1)
+  @Max(6)
   pipes: number
 
   @Column({ nullable: true })
@@ -43,7 +47,8 @@ export class Hookah {
   @Column({ type: 'boolean', default: 1 })
   isPublished: boolean
 
-  @Column('uuid')
+  @Column({ type: 'uuid', nullable: false })
+  @IsNotEmpty()
   storeId: string
 
   @ManyToOne(() => Store, (store) => store.hookahs)
