@@ -13,6 +13,8 @@
   "scripts": {
     "build": "webpack",
     "client": "cd client && yarn start",
+    "docker:build": "docker build -t express-app .",
+    "docker:start": "docker run -p 127.0.0.1:3000:3000 --name express-app express-app",
     "dev": "concurrently --kill-others-on-fail \"yarn start\" \"yarn client\"",
     "lint": "eslint './src/**/*.{js,ts}' --quiet --fix",
     "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run",
