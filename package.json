@@ -12,17 +12,16 @@
   },
   "scripts": {
     "build": "webpack",
-    "test": "jest",
-    "tsc": "tsc",
-    "start": "set debug=* && ts-node-dev --respawn --transpileOnly ./src/index.ts",
     "client": "cd client && yarn start",
     "dev": "concurrently --kill-others-on-fail \"yarn start\" \"yarn client\"",
-    "prod": "tsc && node ./build/app.js",
+    "lint": "eslint './src/**/*.{js,ts}' --quiet --fix",
     "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run",
     "migration:revert": "ts-node ./node_modules/typeorm/cli.js migration:revert",
     "migration:generate": "ts-node ./node_modules/typeorm/cli.js migration:generate -n",
     "migration:create": "ts-node ./node_modules/typeorm/cli.js migration:create -n",
-    "lint": "eslint './src/**/*.{js,ts}' --quiet --fix"
+    "start": "NODE_ENV=development yarn build",
+    "serve": "nodemon ./build/index.js",
+    "test": "jest"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
@@ -53,7 +52,8 @@
     "webpack-cli": "^3.2.3",
     "webpack-filter-warnings-plugin": "^1.2.1",
     "webpack-node-externals": "^1.7.2",
-    "webpack-shell-plugin": "^0.5.0"
+    "webpack-shell-plugin": "^0.5.0",
+    "webpack-shell-plugin-next": "^1.1.9"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -67,7 +67,6 @@
     "reflect-metadata": "^0.1.10",
     "remove": "^0.1.5",
     "sqlite3": "^4.0.3",
-    "ts-node-dev": "^1.0.0-pre.32",
     "typeorm": "^0.2.24"
   }
 }

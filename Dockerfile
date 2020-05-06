@@ -22,10 +22,10 @@ RUN apk add --update python make g++\
 RUN yarn install
 
 # Copy all other source code to work directory
-ADD . /usr/src/app
+COPY . /usr/src/app
 
 # Build
 RUN yarn build
 
 EXPOSE 3000
-CMD [ "yarn start" ]
+CMD [ "yarn", "serve" ]

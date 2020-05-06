@@ -4,7 +4,7 @@ import { IsNotEmpty, Length } from 'class-validator'
 import { Hookah } from './Hookah'
 import { Offer } from './Offer'
 
-@Entity()
+@Entity('Store')
 @Unique(['name'])
 export class Store {
   @PrimaryGeneratedColumn('uuid')

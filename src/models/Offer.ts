@@ -12,7 +12,7 @@ import { IsInt, Min, IsNotEmpty, Length, IsDateString } from 'class-validator'
 import { Store } from './Store'
 import { Hookah } from './Hookah'
 
-@Entity()
+@Entity('Offer')
 export class Offer {
   @PrimaryGeneratedColumn('uuid')
   id: string

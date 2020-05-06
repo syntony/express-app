@@ -6,8 +6,21 @@ import * as helmet from 'helmet'
 import * as cors from 'cors'
 import routes from './routes'
 
+import { Store, Hookah, Offer } from './models'
+
 //Connects to the Database -> then starts the express
-export default createConnection()
+export default createConnection({
+  type: 'sqlite',
+  database: 'database.sqlite',
+  synchronize: false,
+  logging: false,
+  entities: [Store, Hookah, Offer],
+  migrations: [`${__dirname}/src/migration/**/*.ts`],
+  cli: {
+    entitiesDir: `${__dirname}/src/models`,
+    migrationsDir: `${__dirname}/src/migration`,
+  },
+})
   .then(async () => {
     // Create a new express application instance
     const app = express()
