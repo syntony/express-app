@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { getRepository } from 'typeorm'
 import { validate } from 'class-validator'
 
-import { Store } from '../models/Store'
+import { Store } from '../models'
 
 class StoreController {
   static listAll = async (req: Request, res: Response): Promise<void> => {
@@ -14,10 +14,16 @@ class StoreController {
     // Get repo
     const storeRepository = getRepository(Store)
     // Get query from database and some meta
-    const [stores, [allStores, total]] = await Promise.all([
-      storeRepository.find({ take, skip, cache: true }),
-      storeRepository.findAndCount(),
-    ])
+    let stores, allStores, total
+    try {
+      ;[stores, [allStores, total]] = await Promise.all([
+        storeRepository.find({ take, skip, cache: true }),
+        storeRepository.findAndCount(),
+      ])
+    } catch (errors) {
+      res.status(500).send({ message: 'Internal server error', errors })
+      return
+    }
     // Send the stores object and meta
     res.send({
       results: stores,
@@ -34,33 +40,20 @@ class StoreController {
     let store: Store
     try {
       store = await storeRepository
-        //   .findOneOrFail({
-        //   where: { id },
-        //   join: {
-        //     alias: 'store',
-        //     leftJoinAndSelect: {
-        //       hookah: 'store.hookahs',
-        //     },
-        //   },
-        // })
         .createQueryBuilder('store')
         .where({ id })
         .leftJoinAndSelect('store.hookahs', 'hookah')
         .leftJoinAndSelect('hookah.offers', 'offer')
         .getOne()
     } catch (error) {
-      console.log(error)
-
       res.status(500).send({ message: 'Internal Error', error })
       return
     }
-
     // If not found, send a 404 response
     if (!store) {
       res.status(404).send({ message: 'Store not found' })
       return
     }
-
     // Send the users object
     res.send({ results: store })
   }
@@ -87,7 +80,6 @@ class StoreController {
       res.status(409).send({ message: 'Store name is already in use' })
       return
     }
-
     // If all ok, send 201 response
     res.status(201).send({ message: 'Store created' })
   }
@@ -140,7 +132,6 @@ class StoreController {
       return
     }
     await storeRepository.delete(id)
-
     // After all send a 204 (no content, but accepted) response
     res.status(204).send()
   }

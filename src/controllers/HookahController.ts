@@ -2,9 +2,9 @@ import { Request, Response } from 'express'
 import { getRepository } from 'typeorm'
 import { validate } from 'class-validator'
 
-import { Hookah } from '../models/Hookah'
-import { Store } from '../models/Store'
-import { Offer } from '../models/Offer'
+import { Hookah, Store, Offer } from '../models'
+import OfferService from '../services/OfferService'
+import HookahService from '../services/HookahService'
 
 class HookahController {
   static listAll = async (req: Request, res: Response): Promise<void> => {
@@ -33,6 +33,7 @@ class HookahController {
         })
         return
       }
+      // For entity validation
       const offer = new Offer()
       offer.guestsNumber = Number(guestsNumber)
       offer.reservedFrom = String(fromDate)
@@ -43,30 +44,27 @@ class HookahController {
         res.status(400).send({ message: 'Bad Request', errors })
         return
       }
+      if (new Date(String(fromDate)) >= new Date(String(toDate))) {
+        res.status(422).send({ message: 'You probably mixed up dates' })
+        return
+      }
       try {
         hookahs = await hookahRepository
           .createQueryBuilder('hookah')
           .where({ storeId })
           .leftJoinAndSelect('hookah.offers', 'offers')
+          .addOrderBy('offers.reservedUntil', 'DESC')
           .getMany()
-        // TODO: add filter by time and pipes
-        // hookahs = hookahs.reduce((acc, h) => {
-        //   const hookah = h
-        //   const latestDate = new Date(
-        //     Math.max.apply(
-        //       null,
-        //       h.offers.map(({ reservedUntil }) => new Date(reservedUntil))
-        //     )
-        //   )
-        //   const o = hookah.offers.find(({ reservedUntil }) => {
-        //     console.log({ reservedUntil, latestDate: new Date(latestDate) })
-        //     return new Date(reservedUntil) == latestDate
-        //   })
-        //   console.log({ o })
-        //   hookah.offer = o
-        //   delete hookah.offers
-        //   return [...acc, hookah]
-        // }, [])
+        // find offers, that'll cross our offer
+        hookahs = hookahs.reduce((acc, hookah) => {
+          if (!OfferService.getConcurrentOffers({ offers: hookah.offers, fromDate, toDate }).length) {
+            delete hookah.offers
+            acc.push(hookah)
+          }
+          return acc
+        }, [])
+        // get subsets
+        hookahs = HookahService.getHookahsSubsets({ hookahs, guestsNumber: Number(guestsNumber) })
       } catch (errors) {
         res.status(500).send({ message: 'Internal server error', errors })
         return

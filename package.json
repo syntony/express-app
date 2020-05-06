@@ -19,7 +19,7 @@
     "migration:revert": "ts-node ./node_modules/typeorm/cli.js migration:revert",
     "migration:generate": "ts-node ./node_modules/typeorm/cli.js migration:generate -n",
     "migration:create": "ts-node ./node_modules/typeorm/cli.js migration:create -n",
-    "start": "NODE_ENV=development yarn build",
+    "start": "set debug=* && ts-node-dev --respawn --transpileOnly ./src/index.ts",
     "serve": "nodemon ./build/index.js",
     "test": "jest"
   },
@@ -47,13 +47,13 @@
     "ts-jest": "^25.4.0",
     "ts-loader": "^7.0.2",
     "ts-node": "^8.10.1",
+    "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^3.8.3",
     "webpack": "^4.29.3",
     "webpack-cli": "^3.2.3",
     "webpack-filter-warnings-plugin": "^1.2.1",
     "webpack-node-externals": "^1.7.2",
-    "webpack-shell-plugin": "^0.5.0",
-    "webpack-shell-plugin-next": "^1.1.9"
+    "webpack-shell-plugin": "^0.5.0"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

@@ -2,31 +2,38 @@ import { Request, Response } from 'express'
 import { getRepository } from 'typeorm'
 import { validate } from 'class-validator'
 
-import { Offer } from '../models/Offer'
-import { Hookah } from '../models/Hookah'
+import { Offer, Hookah } from '../models'
 import DateService from '../services/DateService'
 
 class OfferController {
   static listAll = async (req: Request, res: Response): Promise<void> => {
+    // Params for pagination
+    const { limit = '10', page = '0' } = req.query
+    const take: number = Number(limit)
+    const reqPage: number = Number(page)
+    const skip: number = take * reqPage
     // Params
     const { storeId, hookahId } = req.params
     const offerRepository = getRepository(Offer)
     // Get query from database and some meta
-    let offers
+    let offers, allOffers, total
     if (typeof hookahId === 'undefined') {
       try {
-        offers = await offerRepository.find({ where: { storeId }, cache: true })
+        ;[offers, [allOffers, total]] = await Promise.all([
+          offerRepository.find({ where: { storeId }, skip, take, cache: true }),
+          offerRepository.findAndCount({ storeId, hookahId }),
+        ])
       } catch (errors) {
         res.status(404).send({ message: 'Store not found', errors })
         return
       }
     } else {
       try {
-        const results = await Promise.all([
-          offerRepository.find({ where: { hookahId }, cache: true }),
+        ;[offers, [allOffers, total]] = await Promise.all([
+          offerRepository.find({ where: { hookahId }, skip, take, cache: true }),
+          offerRepository.findAndCount({ storeId, hookahId }),
           getRepository(Hookah).findOneOrFail({ storeId, id: hookahId }),
         ])
-        offers = results[0]
       } catch (errors) {
         res.status(404).send({ message: 'Hookah not found', errors })
         return
@@ -38,19 +45,22 @@ class OfferController {
       return
     }
     // Send the stores object and meta
-    res.send({ results: offers })
+    res.send({
+      results: offers,
+      meta: { limit: take, page: reqPage, pages: Math.ceil(allOffers.length / take), total },
+    })
   }
 
-  // TODO: start from this point tomorrow
   static getOneById = async (req: Request, res: Response): Promise<void> => {
     // Params
-    const { storeId, hookahId, id } = req.params
+    const { hookahId, id } = req.params
     // Get repo
     const offerRepository = getRepository(Offer)
+    // Check
     // Get query from database
     let offer: Offer
     try {
-      offer = await offerRepository.findOneOrFail({ id })
+      offer = await offerRepository.findOneOrFail({ hookahId, id })
     } catch (error) {
       console.log(error)
       res.status(500).send({ message: 'Offer not found', error })
