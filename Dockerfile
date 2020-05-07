@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:alpine
 
 # Env
 ENV TIME_ZONE=Europe/Kiev
@@ -17,13 +17,15 @@ COPY package.json ./
 COPY yarn.lock ./
 
 # Install all Packages
+RUN apk add --update python make g++\
+   && rm -rf /var/cache/apk/*
 RUN yarn install
 
 # Copy all other source code to work directory
-ADD . /usr/src/app
+COPY . /usr/src/app
 
 # Build
 RUN yarn build
 
 EXPOSE 3000
-CMD [ "yarn start" ]
+CMD [ "yarn", "serve" ]
