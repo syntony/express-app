@@ -1,0 +1,9 @@
+version: '2.0'
+
+services:
+  web:
+    image: express-app
+    container_name: express-app
+    build: .
+    ports:
+      - "3000:3000"

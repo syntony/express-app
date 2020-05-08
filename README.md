@@ -41,7 +41,7 @@ yarn migration:run
     Query params:
     
     - limit - Number, Optional (default: 10) 
-    - offset - Number, Optional (offset: 0)
+    - offset - Number, Optional (pageIndex: 0)
     
     Response example:
     ```$xslt
@@ -60,7 +60,7 @@ yarn migration:run
         ],
         meta: {
             limit: 10,
-            offset: 0,
+            pageIndex: 0,
             pagesTotal: 1,
             itemsTotal: 5
         }
@@ -145,7 +145,7 @@ yarn migration:run
     Query params:
        
    - limit - Number, Optional (default: 10) 
-   - offset - Number, Optional (offset: 0)
+   - offset - Number, Optional (pageIndex: 0)
    
    Response example:
    ```$xslt
@@ -166,7 +166,7 @@ yarn migration:run
             ],
             meta: {
                 limit: 10,
-                offset: 0,
+                pageIndex: 0,
                 pagesTotal: 1,
                 itemsTotal: 4
             }
@@ -215,7 +215,7 @@ yarn migration:run
         ],
         meta: {
             limit: 10,
-            offset: 0,
+            pageIndex: 0,
             pagesTotal: 1
         }
     }
@@ -281,7 +281,7 @@ yarn migration:run
     Query params:
           
       - limit - Number, Optional (default: 10) 
-      - offset - Number, Optional (offset: 0)
+      - offset - Number, Optional (pageIndex: 0)
       
     Response example:
     ```$xslt
@@ -302,7 +302,7 @@ yarn migration:run
         ],
         meta: {
             limit: 10,
-            offset: 0,
+            pageIndex: 0,
             pagesTotal: 2,
             itemsTotal: 15
         }
@@ -314,7 +314,7 @@ yarn migration:run
     Query params:
           
       - limit - Number, Optional (default: 10) 
-      - offset - Number, Optional (offset: 0)
+      - offset - Number, Optional (pageIndex: 0)
 
     Response example:
 
@@ -336,7 +336,7 @@ yarn migration:run
             ],
             meta: {
                 limit: 10,
-                offset: 0,
+                pageIndex: 0,
                 pagesTotal: 1,
                 itemsTotal: 1
             }

@@ -49,7 +49,7 @@ class OfferController {
       results: offers,
       meta: {
         limit: take,
-        offset: reqPage,
+        pageIndex: reqPage,
         pagesTotal: Math.ceil(allOffers.length / take),
         itemsTotal: total,
       },

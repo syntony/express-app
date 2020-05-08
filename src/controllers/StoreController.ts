@@ -29,7 +29,7 @@ class StoreController {
       results: stores,
       meta: {
         limit: take,
-        offset: reqPage,
+        pageIndex: reqPage,
         pagesTotal: Math.ceil(allStores.length / take),
         itemsTotal: total,
       },

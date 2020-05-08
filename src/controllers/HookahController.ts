@@ -88,7 +88,7 @@ class HookahController {
       results: hookahs,
       meta: {
         limit: take,
-        offset: reqPage,
+        pageIndex: reqPage,
         pagesTotal: Math.ceil(hookahs.length / take),
         itemsTotal: total,
       },

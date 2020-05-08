@@ -13,6 +13,8 @@
   "scripts": {
     "build": "webpack",
     "client": "cd client && yarn start",
+    "docker": "docker-compose up -d",
+    "docker:stop": "docker-compose stop",
     "lint": "eslint './src/**/*.{js,ts}' --quiet --fix",
     "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run",
     "migration:revert": "ts-node ./node_modules/typeorm/cli.js migration:revert",
